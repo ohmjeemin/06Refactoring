@@ -168,17 +168,37 @@
 	
 	
 	
-	<!-- SQL : SELECT ROW Count -->	 
+	<!-- SQL : PurchaseList Row Count -->	 
 	 <select  id="getTotalCount"  parameterType="map"	 resultType="int">
 	  	SELECT COUNT(*)
 	  			FROM(	SELECT t.tran_no , p.prod_no 
 							FROM product p, transaction t, users u	
 							WHERE t.prod_no = p.prod_no 
-								AND t.buyer_id = u.user_id 
-								AND u.user_id = #{buyerId}
-						<if test="search.searchCondition != null">
+							AND t.buyer_id = u.user_id 
+							AND u.user_id = #{buyerId}
+					<if test="search.searchCondition != null">
 							
-								<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
+							<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
+						 			AND t.tran_no = #{search.searchKeyword}
+								</if>
+								<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
+						 			AND p.prod_no = #{search.searchKeyword}
+								</if>
+							
+						</if> ) countTable						
+	 </select>
+	 
+	 
+	 <!-- SQL : ListSale Row Count -->	 
+	 <select  id="getTotalCount2"  parameterType="map"	 resultType="int">
+	  	SELECT COUNT(*)
+	  			FROM(	SELECT t.tran_no , p.prod_no 
+							FROM product p, transaction t
+							WHERE t.prod_no = p.prod_no 
+							
+					<if test="search.searchCondition != null">
+							
+							<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
 						 			AND t.tran_no = #{search.searchKeyword}
 								</if>
 								<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
@@ -207,7 +227,7 @@
 	   	<set>
 	   		tran_status_code = #{tranCode} 
 	   	</set>
-	   	WHERE prod_no = #{purchaseProd.prodNo:NUMERIC}
+	   		WHERE prod_no = #{purchaseProd.prodNo:NUMERIC}
 	 </update>
 	 
 	
@@ -215,18 +235,9 @@
 	<select  id="getSaleList" parameterType="map" resultMap="purchaseSelectMap">
 	 	SELECT *
 	  	FROM (	SELECT inner_table.* , ROWNUM AS row_seq
-		  FROM (	SELECT t.tran_no , p.prod_no ,t.buyer_id, p.prod_name, t.demailaddr
-						FROM product p, transaction t		
-							WHERE t.prod_no = p.prod_no 
-						
-						<if test="search.searchCondition != null">		
-						<if test="search.searchCondition == 0 and search.searchKeyword !='' ">
-				 			AND t.tran_no = #{search.searchKeyword}
-						</if>
-						<if test="search.searchCondition == 1 and search.searchKeyword !='' ">
-				 			AND p.prod_no = #{search.searchKeyword}
-						</if>
-					</if> 	
+		  FROM (	SELECT t.tran_no , p.prod_no ,t.buyer_id, p.prod_name, t.demailaddr, t.tran_status_code
+				    FROM product p, transaction t		
+					WHERE t.prod_no = p.prod_no 
 							ORDER BY t.tran_no  ) inner_table
   						WHERE ROWNUM <![CDATA[<=]]> #{search.currentPage}*#{search.pageSize} )
   		WHERE row_seq BETWEEN (#{search.currentPage}-1)*#{search.pageSize}+1

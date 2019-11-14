@@ -112,7 +112,7 @@ public class PurchaseDaoImpl implements PurchaseDao {
 				list.get(i).setPurchaseProd((Product)sqlSession.selectOne("ProductMapper.getProduct", list.get(i).getPurchaseProd().getProdNo()));
 			}
 			
-			map.put("totalCount", sqlSession.selectOne("PurchaseMapper.getTotalCount", map));
+			map.put("totalCount", sqlSession.selectOne("PurchaseMapper.getTotalCount2", map));
 			map.put("list", list);
 
 		return map;

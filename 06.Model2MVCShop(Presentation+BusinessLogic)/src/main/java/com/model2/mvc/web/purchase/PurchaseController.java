@@ -24,25 +24,41 @@ import com.model2.mvc.service.purchase.PurchaseService;
 @Controller
 public class PurchaseController {
 
+	
+	
+	
 	//F
 	@Autowired
 	@Qualifier("purchaseServiceImpl")
 	private PurchaseService purchaseService;
 	
+	
 	@Autowired
 	@Qualifier("productServiceImpl")
 	private ProductService productService;
 
+	
+	
+	
+	
 	//C
 	public PurchaseController() {
 		System.out.println(this.getClass());
 	}
+	
+	
+	
+	
 	
 	@Value("#{commonProperties['pageUnit']}")
 	int pageUnit;
 	
 	@Value("#{commonProperties['pageSize']}")
 	int pageSize;
+	
+	
+	
+	
 	
 	
 	@RequestMapping("/addPurchaseView.do")
@@ -60,6 +76,10 @@ public class PurchaseController {
 		return "forward:/purchase/addPurchaseView.jsp";	
 	
 	}
+	
+	
+	
+	
 	
 	@RequestMapping("/addPurchase.do")
 	public String addPurchase(@ModelAttribute("purchase") Purchase purchase, @RequestParam("prodNo") int prodNo, Model model, HttpSession session) throws Exception {
@@ -80,6 +100,10 @@ public class PurchaseController {
 		return "forward:/purchase/addPurchase.jsp";
 
 	}
+	
+	
+	
+	
 	
 	
 	@RequestMapping("/listPurchase.do")
@@ -109,6 +133,10 @@ public class PurchaseController {
 	}
 	
 	
+	
+	
+	
+	
 	@RequestMapping("/getPurchase.do")
 	public String getPurchase(@ModelAttribute("purchase") Purchase purchase, Model model) throws Exception{
 		
@@ -118,16 +146,24 @@ public class PurchaseController {
 		return "forward:/purchase/getPurchase.jsp";
 	}
 	
+	
+	
+	
+	
 
 	@RequestMapping("/updatePurchaseView.do")
 	public String updatePurchaseView(@RequestParam("tranNo") int tranNo, @ModelAttribute("purchase") Purchase purchase, Model model) throws Exception {
 				
 		purchase = purchaseService.getPurchase(tranNo);
 		model.addAttribute("purchase", purchase);
-	
+		System.out.println(purchase);
 		return "forward:/purchase/updatePurchaseView.jsp";
 	}
 
+	
+	
+	
+	
 
 	@RequestMapping("/updatePurchase.do")
 	public String updatePurchase(@ModelAttribute("purchase") Purchase purchase, Model model) throws Exception {
@@ -139,5 +175,61 @@ public class PurchaseController {
 		
 	}
 
+	
+	
+	
+	
+	@RequestMapping("/listSale.do")
+	public String listSale(@ModelAttribute("search") Search search, Model model) throws Exception {
+		
+		if(search.getCurrentPage()==0) {
+	   		search.setCurrentPage(1);
+	   	}
+	   	search.setPageSize(pageSize);
+	   	
+	   	
+		Map<String, Object> map  = purchaseService.getSaleList(search);
+		
+	 	Page resultPage	= 
+				new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
+	   	
+		model.addAttribute("list", map.get("list"));
+		model.addAttribute("resultPage", resultPage);
+		model.addAttribute("search", search);
+	
+		return "forward:/purchase/listSale.jsp";
+		
+	}
+	
+	
+	
+	
+	@RequestMapping("/updateTranCode.do")
+	public String updateTranCode(@ModelAttribute("purchase") Purchase purchase, @RequestParam("tranCode") String tranCode, @RequestParam("tranNo") int tranNo, Model model) throws Exception {
+		
+		purchase.setTranNo(tranNo);
+		purchase.setTranCode(tranCode);
+		purchaseService.updateTranCode(purchase);
+		model.addAttribute("purchase", purchase);
+				
+		return "redirect:/listPurchase.do?menu=search";
+		
+	}
 
+
+	
+	
+	@RequestMapping("/updateTranCodeByProd.do")
+	public String updateTranCodeByProd(@ModelAttribute("purchase") Purchase purchase, @RequestParam("tranCode") String tranCode, @RequestParam("prodNo") int prodNo, Model model) throws Exception {
+		
+		Product product = productService.getProduct(prodNo);
+		
+		purchase.setPurchaseProd(product);
+		purchase.setTranCode(tranCode);
+		purchaseService.updateTranCode2(purchase);
+		model.addAttribute("purchase", purchase);
+				
+		return "forward:/listSale.do";
+	}
+	
 }

@@ -62,6 +62,11 @@ function history(){
 						<a href="/listProduct.do?menu=manage"  target="rightFrame">판매상품관리</a>
 					</td>
 				</tr>
+				 <tr>
+					<td class="Depth03">
+						<a href="/listSale.do" target="rightFrame">판매이력조회</a>
+				</td>
+			</tr>
 				<tr>
 					<td class="DepthEnd">&nbsp;</td>
 				</tr>

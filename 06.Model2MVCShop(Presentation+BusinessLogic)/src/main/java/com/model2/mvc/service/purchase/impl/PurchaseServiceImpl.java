@@ -38,8 +38,8 @@ public class PurchaseServiceImpl implements PurchaseService {
 	@Override
 	public Purchase getPurchase(int tranNo) throws Exception {
 		System.out.println("[Impl:getPurchase»£√‚]");
-																																					return purchaseDao.findPurchase(tranNo);
-																																				}
+		return purchaseDao.findPurchase(tranNo);
+						}
 
 	@Override
 	public Purchase getPurchase2(int prodNo) throws Exception {
